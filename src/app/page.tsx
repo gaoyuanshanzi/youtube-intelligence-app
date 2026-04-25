@@ -21,7 +21,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [apiKey, setApiKey] = useState("");
   const [isKeySaved, setIsKeySaved] = useState(false);
-  const [urls, setUrls] = useState<string[]>(Array(5).fill(""));
+  const [items, setItems] = useState<{url: string, manualInfo: string}[]>(Array(5).fill({url: "", manualInfo: ""}));
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [email, setEmail] = useState("");
@@ -53,17 +53,17 @@ export default function Dashboard() {
     router.push("/login");
   };
 
-  const handleUrlChange = (index: number, value: string) => {
-    const newUrls = [...urls];
-    newUrls[index] = value;
-    setUrls(newUrls);
+  const handleItemChange = (index: number, field: "url" | "manualInfo", value: string) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], [field]: value };
+    setItems(newItems);
   };
 
   const handleStartAnalysis = async () => {
     if (!apiKey) return alert("Please enter and save your Gemini API Key first.");
     
-    const validUrls = urls.filter(u => u.trim() !== "");
-    if (validUrls.length === 0) return alert("Please enter at least one YouTube URL.");
+    const validItems = items.filter(i => i.url.trim() !== "");
+    if (validItems.length === 0) return alert("Please enter at least one YouTube URL.");
 
     setIsAnalyzing(true);
     setResults([]);
@@ -75,7 +75,7 @@ export default function Dashboard() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({ urls: validUrls }),
+        body: JSON.stringify({ items: validItems }),
       });
       
       const data = await response.json();
@@ -158,13 +158,19 @@ export default function Dashboard() {
           <CardTitle>Target URLs</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {urls.map((url, i) => (
+          {items.map((item, i) => (
             <div key={i} className="flex gap-4">
-              <div className="flex-1">
+              <div className="flex-1 space-y-2">
                 <Input
                   placeholder={`https://www.youtube.com/watch?v=... (${i + 1})`}
-                  value={url}
-                  onChange={(e) => handleUrlChange(i, e.target.value)}
+                  value={item.url}
+                  onChange={(e) => handleItemChange(i, "url", e.target.value)}
+                />
+                <textarea
+                  placeholder={`수동 정보 입력 (선택사항) - 요약에 반영될 스크립트나 설명을 적어주세요`}
+                  value={item.manualInfo}
+                  onChange={(e) => handleItemChange(i, "manualInfo", e.target.value)}
+                  className="flex min-h-[60px] w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm ring-offset-slate-950 placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             </div>

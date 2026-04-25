@@ -14,10 +14,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized or missing API Key" }, { status: 401 });
     }
     const apiKey = authHeader.split(" ")[1];
-    const { urls } = await req.json();
+    const { items } = await req.json();
 
-    if (!urls || !Array.isArray(urls)) {
-      return NextResponse.json({ error: "Invalid URLs" }, { status: 400 });
+    if (!items || !Array.isArray(items)) {
+      return NextResponse.json({ error: "Invalid Items" }, { status: 400 });
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -25,7 +25,9 @@ export async function POST(req: NextRequest) {
 
     const results = [];
 
-    for (const url of urls) {
+    for (const item of items) {
+      const url = item.url;
+      const manualInfo = item.manualInfo;
       try {
         const videoId = extractVideoId(url);
         if (!videoId) {
@@ -54,12 +56,13 @@ export async function POST(req: NextRequest) {
 Here is the available metadata for a video:
 Title: ${title}
 Description: ${description}
-
+${manualInfo ? `\nUser provided manual context/script:\n${manualInfo}\n` : ''}
 Top Comments:
 ${commentsText.substring(0, 3000)}
 
-Based on the title, description, and user comments, please write a concise summary of what this video is about in Korean. 
-Even if the description is short or lacks details, do your best to infer the video's topic from the title and comments. DO NOT reply that you lack information. Provide the best summary possible.`;
+Based on the title, description, user provided manual context/script (if any), and user comments, please write a concise summary of what this video is about in Korean. 
+If 'User provided manual context/script' is present, prioritize it heavily as the main source for your summary.
+Even if the description is short or lacks details, do your best to infer the video's topic from the available context. DO NOT reply that you lack information. Provide the best summary possible.`;
         const summaryResponse = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
           contents: summaryPrompt,
