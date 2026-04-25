@@ -263,8 +263,8 @@ export default function Dashboard() {
               <div className="flex items-center gap-4 max-w-2xl mx-auto">
                 <Mail className="text-slate-400 h-5 w-5" />
                 <Input
-                  type="email"
-                  placeholder="Enter email to receive report"
+                  type="text"
+                  placeholder="여러 명일 경우 콤마(,)로 구분 (예: a@a.com, b@b.com)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="flex-1"
