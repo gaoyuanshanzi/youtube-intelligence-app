@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
           // Extract top 50 comments
           const topComments = comments.contents
             .slice(0, 50)
-            .map(c => c.content?.toString() || "");
+            .map((c: any) => c.content?.toString() || "");
           commentsText = topComments.join("\n---\n");
         } catch (e) {
           console.warn("Could not fetch comments for", videoId);
