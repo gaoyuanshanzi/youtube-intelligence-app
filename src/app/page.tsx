@@ -142,11 +142,11 @@ export default function Dashboard() {
               }}
               className="w-64"
             />
-            <Button onClick={handleSaveKey} variant="default" className={isKeySaved ? "bg-emerald-600 hover:bg-emerald-700" : ""}>
+            <Button onClick={handleSaveKey} className={isKeySaved ? "bg-emerald-600 hover:bg-emerald-700" : ""}>
               {isKeySaved ? "Saved" : "Save Key"}
             </Button>
           </div>
-          <Button onClick={handleLogout} variant="outline" className="bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800">
+          <Button onClick={handleLogout} className="bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 border">
             <LogOut className="h-4 w-4" />
           </Button>
         </div>
