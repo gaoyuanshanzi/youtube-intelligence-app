@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     `;
 
     await transporter.sendMail({
-      from: '"YouTube Intelligence" <reports@yt-intelligence.local>',
+      from: `"YouTube Intelligence" <${process.env.SMTP_USER}>`,
       to: email,
       subject: "YouTube Intelligence Analysis Report",
       html: htmlContent,
