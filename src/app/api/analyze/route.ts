@@ -50,7 +50,16 @@ export async function POST(req: NextRequest) {
         }
 
         // Summary Generation
-        const summaryPrompt = `Summarize the following YouTube video concisely in Korean. Title: ${title}\nDescription: ${description}`;
+        const summaryPrompt = `You are an AI assistant that summarizes YouTube videos. 
+Here is the available metadata for a video:
+Title: ${title}
+Description: ${description}
+
+Top Comments:
+${commentsText.substring(0, 3000)}
+
+Based on the title, description, and user comments, please write a concise summary of what this video is about in Korean. 
+Even if the description is short or lacks details, do your best to infer the video's topic from the title and comments. DO NOT reply that you lack information. Provide the best summary possible.`;
         const summaryResponse = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
           contents: summaryPrompt,
